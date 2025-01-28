@@ -1,0 +1,12 @@
+{
+	"enabled": true,
+	"description": "Host sockets activation",
+	"version": "0.0.1",
+	"activationContext": "LOCAL",
+	"pythonRemote": {
+		"tcp_ports": [
+			8888,
+			22
+		]
+	}
+}

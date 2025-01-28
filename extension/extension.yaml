@@ -1,0 +1,21 @@
+name: custom:alanata.host-sockets
+version: 0.0.2
+minDynatraceVersion: "1.253"
+author:
+  name: "Dynatrace"
+
+python:
+  runtime:
+    module: host_sockets
+    version:
+      min: "3.9"
+
+  activation:
+    local:
+      path: activationSchema.json
+
+metrics:
+  - key: host.net.sockets
+    metadata:
+      displayName: Host socket statistics
+      unit: Count

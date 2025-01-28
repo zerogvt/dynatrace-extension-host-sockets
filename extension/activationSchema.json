@@ -1,0 +1,42 @@
+{
+  "types": {
+    "pythonLocal": {
+      "type": "object",
+      "properties": {
+        "tcp_ports": {
+          "displayName": "TCP Ports",
+          "description": "List of TCP ports to check",
+          "type": "list",
+          "items": {
+            "type": "integer"
+          },
+          "nullable": false,
+          "minItems": 0,
+          "maxItems": 100,
+          "metaData": {
+            "addItemButton": "Add TCP port"
+          }
+        }
+      }
+    }
+  },
+  "dynatrace": "1",
+  "description": "Host sockets stats configuration",
+  "schemaId": "python-extension.activation",
+  "displayName": "Host sockets stats configuration",
+  "ownerProductManagement": "dynatrace",
+  "ownerDevelopment": "dynatrace",
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "tenant"
+  ],
+  "multiObject": false,
+  "properties": {
+    "pythonLocal": {
+      "displayName": "Python Local Extension",
+      "type": {
+        "$ref": "#/types/pythonLocal"
+      }
+    }
+  }
+}
