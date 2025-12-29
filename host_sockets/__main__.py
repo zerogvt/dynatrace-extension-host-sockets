@@ -1,34 +1,54 @@
 from dynatrace_extension import Extension, Status, StatusValue
 import subprocess
 import re
+import platform
+
 
 class HostSocketStats(Extension):
 
     def get_ss_records(self, port:int):
         try:
-            # Execute the ss command with filtering for a specific port
-            command = [
-                "ss", "-ant", f"( sport = :{port} )"
-            ]            
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if platform.system() == "Linux":
+                # Execute the ss command with filtering for a specific port
+                command = [
+                    "ss", "-ant", f"( sport = :{port} )"
+                ]   
+                result = subprocess.run(command,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        text=True,
+                                        check=False)
+                records = {}
+                # Check for errors in command execution
+                if result.returncode != 0:
+                    self.logger.error("Error executing ss command: {result.stderr}")
+                    return records
 
-            records = {}
-            
-            # Check for errors in command execution
-            if result.returncode != 0:
-                self.logger.error("Error executing ss command: {result.stderr}")
+                # Parse the output into records
+                lines = result.stdout.strip().split("\n")
+                # Skip the header line and process the remaining lines
+                for line in lines[1:]:
+                    parts = re.split(r"\s+", line)
+                    if len(parts)==5:
+                        records[parts[0]] = records.get(parts[0],0)+1
+                    return records
+            elif platform.system() == "Windows":
+                result = subprocess.run('netstat -ano',
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        text=True,
+                                        check=False)
+                records = {}
+                lines = result.stdout.strip().split("\n")
+                for i, line in enumerate(lines):
+                    sline = line.lstrip()
+                    parts = re.split(r"\s+", sline)
+                    if len(parts)<2 or parts[0] not in ["TCP", "UDP"]:
+                        continue
+                    records[i] = sline
                 return records
-
-            # Parse the output into records
-            lines = result.stdout.strip().split("\n")
-            # Skip the header line and process the remaining lines
-            for line in lines[1:]:
-                parts = re.split(r"\s+", line)
-                if len(parts)==5:
-                    records[parts[0]] = records.get(parts[0],0)+1
-
-            return records
-
+            else:
+                return {}
         except Exception as e:
             print(f"Error: {e}")
             return []
