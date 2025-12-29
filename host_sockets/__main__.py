@@ -12,15 +12,13 @@ class HostSocketStats(Extension):
                 # Execute the ss command with filtering for a specific port
                 command = [
                     "ss", "-ant", f"( sport = :{port} )"
-                ]            
+                ]   
                 result = subprocess.run(command,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
                                         text=True,
                                         check=False)
-
                 records = {}
-                
                 # Check for errors in command execution
                 if result.returncode != 0:
                     self.logger.error("Error executing ss command: {result.stderr}")
